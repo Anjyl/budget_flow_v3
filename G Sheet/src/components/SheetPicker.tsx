@@ -169,14 +169,23 @@ export default function SheetPicker(props: {
                                 className="w-full text-left border border-border bg-card text-card-foreground brutal-shadow-sm px-3 py-2 hover:translate-x-[1px] hover:translate-y-[1px] transition-transform"
                                 onClick={() => pickFromDrive(f)}
                               >
-                                <div className="flex items-start justify-between gap-3">
-                                  <div>
-                                    <p className="text-sm font-medium">{f.name}</p>
+                                <div className="flex items-start gap-3">
+                                  {f.thumbnailLink && (
+                                    <img
+                                      src={f.thumbnailLink}
+                                      alt={`${f.name} thumbnail`}
+                                      className="w-12 h-12 rounded-sm object-cover border border-border"
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{f.name}</p>
                                     <p className="text-xs text-muted-foreground">
                                       {f.owners?.length ? `Owner: ${f.owners[0]}` : ""}
                                     </p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {f.modifiedTime ? `Modified: ${new Date(f.modifiedTime).toLocaleDateString()}` : ""}
+                                    </p>
                                   </div>
-                                  <span className="text-xs text-muted-foreground">{f.modifiedTime ? new Date(f.modifiedTime).toLocaleDateString() : ""}</span>
                                 </div>
                               </button>
                             ))}

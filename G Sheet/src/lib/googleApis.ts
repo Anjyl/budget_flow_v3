@@ -37,6 +37,7 @@ export type DriveSheetFile = {
   name: string;
   modifiedTime?: string;
   owners?: string[];
+  thumbnailLink?: string;
 };
 
 export async function listSpreadsheetFiles(args: {
@@ -58,7 +59,7 @@ export async function listSpreadsheetFiles(args: {
     q: qParts.join(" and "),
     pageSize: args.pageSize ?? 50,
     orderBy: "modifiedTime desc",
-    fields: "files(id,name,modifiedTime,owners(displayName))",
+    fields: "files(id,name,modifiedTime,owners(displayName),thumbnailLink)",
     supportsAllDrives: true,
     includeItemsFromAllDrives: true,
     corpora: "user",
@@ -70,6 +71,7 @@ export async function listSpreadsheetFiles(args: {
     name: f.name,
     modifiedTime: f.modifiedTime,
     owners: (f.owners ?? []).map((o: any) => o.displayName).filter(Boolean),
+    thumbnailLink: f.thumbnailLink,
   }));
 }
 

@@ -10,6 +10,7 @@ import Landing from "./pages/Landing";
 import FileChooser from "./pages/FileChooser";
 import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
+import Budget from "./pages/Budget";
 import Categories from "./pages/Categories";
 import Analytics from "./pages/Analytics";
 import SheetsEditor from "./pages/SheetsEditor";
@@ -66,6 +67,11 @@ function Router() {
           <Route path={"/transactions"}>
             <ProtectedRoute>
               <Transactions />
+            </ProtectedRoute>
+          </Route>
+          <Route path={"/budget"}>
+            <ProtectedRoute>
+              <Budget />
             </ProtectedRoute>
           </Route>
           <Route path={"/categories"}>

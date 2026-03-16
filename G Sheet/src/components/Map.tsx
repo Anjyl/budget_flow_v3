@@ -80,11 +80,6 @@ import { useEffect, useRef } from "react";
 import { usePersistFn } from "@/hooks/usePersistFn";
 import { cn } from "@/lib/utils";
 
-declare global {
-  interface Window {
-    google?: typeof google;
-  }
-}
 
 const API_KEY = import.meta.env.VITE_FRONTEND_FORGE_API_KEY;
 const FORGE_BASE_URL =
@@ -141,7 +136,9 @@ export function MapView({
       mapId: "DEMO_MAP_ID",
     });
     if (onMapReady) {
-      onMapReady(map.current);
+      if (map.current) {
+        onMapReady(map.current);
+      }
     }
   });
 

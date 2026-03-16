@@ -6,9 +6,11 @@ interface SelectedSheet {
   modifiedTime: string;
 }
 
-interface AuthState {
+export interface AuthState {
   accessToken: string;
   scope: string;
+  name?: string;
+  email?: string;
 }
 
 interface SheetContextType {

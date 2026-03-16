@@ -44,11 +44,12 @@ export default function Categories() {
     icon: ICON_OPTIONS[0],
   });
 
-  const { data: categories = [], refetch: refetchCategories } = { data: [], refetch: () => {} }; // Mock
+  const categories: any[] = [];
+  const refetchCategories = () => {};
 
-  const createMutation = { mutate: () => {}, isPending: false }; // Mock
-  const updateMutation = { mutate: () => {}, isPending: false }; // Mock
-  const deleteMutation = { mutate: () => {}, isPending: false }; // Mock
+  const createMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
+  const updateMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
+  const deleteMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
 
   const resetForm = () => {
     setFormData({

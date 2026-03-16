@@ -1,15 +1,33 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// import { trpc } from "@/lib/trpc";
 import { TrendingDown, TrendingUp, Wallet, Target } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { useSheet } from "@/contexts/SheetContext";
+import { fetchFirstSheetAsTable } from "@/lib/googleApis";
+import { parseTransactionsFromSnapshot } from "@/lib/sheetUtils";
+import type { TransactionRow } from "@/lib/sheetUtils";
 
 export default function Dashboard() {
   const { user } = useAuth();
-  // Mock data for now
-  const transactions = [];
-  const budgets = [];
+  const { selectedSheet } = useSheet();
+
+  const [transactions, setTransactions] = useState<TransactionRow[]>([]);
+  const [budgets, setBudgets] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!selectedSheet) return;
+
+    fetchFirstSheetAsTable(selectedSheet.id)
+      .then((snapshot) => {
+        const parsed = parseTransactionsFromSnapshot(snapshot);
+        setTransactions(parsed);
+      })
+      .catch(() => {
+        setTransactions([]);
+      });
+  }, [selectedSheet]);
 
   // Calculate totals
   const totalExpenses = transactions

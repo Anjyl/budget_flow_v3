@@ -166,11 +166,11 @@ export default function SheetsEditor() {
         </div>
 
         {/* File Info */}
-        {selectedFile && (
+        {selectedSheet && (
           <Card className="bg-blue-50 border-blue-200">
             <CardContent className="pt-6">
               <p className="text-sm">
-                <span className="font-semibold">File:</span> {selectedFile.name}
+                <span className="font-semibold">File:</span> {selectedSheet.name}
               </p>
             </CardContent>
           </Card>

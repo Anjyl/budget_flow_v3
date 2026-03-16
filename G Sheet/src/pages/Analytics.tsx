@@ -9,9 +9,9 @@ const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F"
 
 export default function Analytics() {
   const currentMonth = getCurrentMonth();
-  const { data: transactions = [] } = { data: [] }; // Mock
-  const { data: categories = [] } = { data: [] }; // Mock
-  const { data: monthlySummary = [] } = { data: [] }; // Mock
+  const transactions: any[] = [];
+  const categories: any[] = [];
+  const monthlySummary: any[] = [];
 
   // Calculate spending by category
   const spendingByCategory = useMemo(() => {
@@ -101,7 +101,11 @@ export default function Analytics() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percentage }) => `${name} (${((name as any).amount / totalExpenses * 100).toFixed(1)}%)`}
+                      label={(props: any) => {
+                        const name = props.name;
+                        const amount = props.payload?.amount ?? 0;
+                        return `${name} (${((amount / totalExpenses) * 100).toFixed(1)}%)`;
+                      }}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="amount"

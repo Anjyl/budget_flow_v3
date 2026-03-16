@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,14 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { trpc } from "@/lib/trpc";
 import { formatCurrency, parseCurrency, formatDate } from "@/lib/utils";
 import { Trash2, Edit2, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { useSheet } from "@/contexts/SheetContext";
+import { fetchFirstSheetAsTable } from "@/lib/googleApis";
+import { parseTransactionsFromSnapshot } from "@/lib/sheetUtils";
+import type { TransactionRow } from "@/lib/sheetUtils";
 
 export default function Transactions() {
+  const { selectedSheet } = useSheet();
+
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     amount: "",
     description: "",
@@ -27,12 +32,32 @@ export default function Transactions() {
     type: "expense" as "expense" | "income",
   });
 
-  const { data: transactions = [], refetch: refetchTransactions } = { data: [], refetch: () => {} }; // Mock
-  const { data: categories = [] } = { data: [] }; // Mock
+  const [transactions, setTransactions] = useState<TransactionRow[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const createMutation = { mutate: () => {}, isPending: false }; // Mock
-  const updateMutation = { mutate: () => {}, isPending: false }; // Mock
-  const deleteMutation = { mutate: () => {}, isPending: false }; // Mock
+  useEffect(() => {
+    if (!selectedSheet) return;
+
+    fetchFirstSheetAsTable(selectedSheet.id)
+      .then((snapshot) => {
+        setTransactions(parseTransactionsFromSnapshot(snapshot));
+      })
+      .catch(() => setTransactions([]));
+  }, [selectedSheet]);
+
+  const refetchTransactions = () => {
+    if (!selectedSheet) return;
+
+    fetchFirstSheetAsTable(selectedSheet.id)
+      .then((snapshot) => {
+        setTransactions(parseTransactionsFromSnapshot(snapshot));
+      })
+      .catch(() => setTransactions([]));
+  };
+
+  const createMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
+  const updateMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
+  const deleteMutation = { mutate: (_: any) => {}, isPending: false }; // Mock
 
   const resetForm = () => {
     setFormData({
@@ -78,14 +103,14 @@ export default function Transactions() {
       amount: formatCurrency(transaction.amount).replace("$", ""),
       description: transaction.description || "",
       date: new Date(transaction.date).toISOString().split("T")[0],
-      categoryId: transaction.categoryId.toString(),
+      categoryId: transaction.category?.toString() ?? "",
       type: transaction.type,
     });
     setEditingId(transaction.id);
     setIsFormOpen(true);
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to delete this transaction?")) {
       deleteMutation.mutate({ id });
     }
@@ -214,7 +239,7 @@ export default function Transactions() {
                         <td className="py-3 px-4">{formatDate(new Date(transaction.date))}</td>
                         <td className="py-3 px-4">{transaction.description || "-"}</td>
                         <td className="py-3 px-4">
-                          {categories.find((c) => c.id === transaction.categoryId)?.name || "Unknown"}
+                          {categories.find((c) => c.id === transaction.category)?.name || "Unknown"}
                         </td>
                         <td className={`py-3 px-4 text-right font-semibold ${transaction.type === "income" ? "text-green-600" : "text-red-600"}`}>
                           {transaction.type === "income" ? "+" : "-"}

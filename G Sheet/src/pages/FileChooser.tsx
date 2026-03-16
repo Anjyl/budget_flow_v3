@@ -9,12 +9,13 @@ import { FileText, Search, CheckCircle2, Clock, User, ExternalLink, LogOut } fro
 import { toast } from "sonner";
 import { initGapi, listSpreadsheetFiles, setGapiToken, type DriveSheetFile } from "@/lib/googleApis";
 import { useSheet } from "@/contexts/SheetContext";
+import Onboarding from "@/components/Onboarding";
 
 interface GoogleFile {
   id: string;
   name: string;
-  modifiedTime: string;
-  owners?: Array<{ displayName: string; emailAddress: string }>;
+  modifiedTime?: string;
+  owners?: any[];
   webViewLink?: string;
 }
 
@@ -36,6 +37,7 @@ export default function FileChooser() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedFile, setSelectedFile] = useState<GoogleFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [onboardingCompleted, setOnboardingCompleted] = useState(false);
 
   // Redirect to landing if not authenticated
   useEffect(() => {
@@ -73,12 +75,12 @@ export default function FileChooser() {
       await initGapi(apiKey);
       setGapiToken(auth.accessToken);
       const driveFiles = await listSpreadsheetFiles({ query: "", pageSize: 50 });
-      const mappedFiles: GoogleFile[] = driveFiles.map(f => ({
+      const mappedFiles: GoogleFile[] = driveFiles.map((f) => ({
         id: f.id,
         name: f.name,
-        modifiedTime: f.modifiedTime,
-        owners: f.owners,
-        webViewLink: f.webViewLink,
+        modifiedTime: f.modifiedTime ?? "",
+        owners: f.owners as any[],
+        webViewLink: (f as any).webViewLink ?? "",
       }));
       setFiles(mappedFiles);
     } catch (error) {
@@ -95,7 +97,7 @@ export default function FileChooser() {
       setSelectedSheet({
         id: file.id,
         name: file.name,
-        modifiedTime: file.modifiedTime,
+        modifiedTime: file.modifiedTime ?? "",
       });
       toast.success(`Selected: ${file.name}`);
       
@@ -125,6 +127,11 @@ export default function FileChooser() {
         </div>
       </div>
     );
+  }
+
+  // Show onboarding if not completed
+  if (!onboardingCompleted) {
+    return <Onboarding onComplete={() => setOnboardingCompleted(true)} />;
   }
 
   return (
@@ -224,7 +231,7 @@ export default function FileChooser() {
                     <Clock className="h-4 w-4" />
                     <span>
                       Modified:{" "}
-                      {new Date(file.modifiedTime).toLocaleDateString()}
+                      {file.modifiedTime ? new Date(file.modifiedTime).toLocaleDateString() : ""}
                     </span>
                   </div>
 
