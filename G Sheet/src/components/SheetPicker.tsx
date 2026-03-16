@@ -63,7 +63,7 @@ export default function SheetPicker(props: {
 
   async function openPicker() {
     if (!apiKey || !appId) {
-      toast.error("Picker needs VITE_GOOGLE_API_KEY + VITE_GOOGLE_APP_ID. Use Browse Drive instead.");
+      toast.error("Advanced file picker is not available. Use Browse Drive instead.");
       return;
     }
 
@@ -115,7 +115,7 @@ export default function SheetPicker(props: {
             <div>
               <p className="text-sm font-medium">Pick a Google Sheet</p>
               <p className="text-xs text-muted-foreground">
-                Browse Drive (works in preview) or paste a Spreadsheet ID. Google Picker is optional.
+                Browse your Google Drive or paste a Spreadsheet ID.
               </p>
             </div>
 
@@ -197,8 +197,7 @@ export default function SheetPicker(props: {
                   </div>
 
                   <p className="text-xs text-muted-foreground mt-3">
-                    If you don’t see a shared sheet, make sure it’s shared to the same Google account you connected with,
-                    and that Drive API is enabled.
+                    If you don't see a shared sheet, make sure it's shared with the same Google account you connected with.
                   </p>
                 </DialogContent>
               </Dialog>
@@ -209,7 +208,7 @@ export default function SheetPicker(props: {
                 onClick={openPicker}
                 disabled={!canUseGooglePicker}
                 size="sm"
-                title={canUseGooglePicker ? "" : "Needs VITE_GOOGLE_APP_ID"}
+                title={canUseGooglePicker ? "" : "Advanced file picker not available"}
               >
                 Picker
               </Button>
@@ -218,11 +217,11 @@ export default function SheetPicker(props: {
 
           {!apiKey ? (
             <p className="mt-3 text-xs text-destructive">
-              Missing <span className="font-mono">VITE_GOOGLE_API_KEY</span> (required to browse Drive / call Sheets).
+              Google Drive browsing is not available.
             </p>
           ) : !appId ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Tip: set <span className="font-mono">VITE_GOOGLE_APP_ID</span> to enable the Google Picker button.
+              Advanced file picker is not available.
             </p>
           ) : null}
 
@@ -230,7 +229,7 @@ export default function SheetPicker(props: {
             <Input
               value={manualId}
               onChange={(e) => setManualId(e.target.value)}
-              placeholder="Spreadsheet ID (the part after /d/ in the URL)"
+              placeholder="Enter your Google Sheet ID"
               className="border"
             />
             <Button onClick={submitManual} variant="outline" className="border" size="sm">

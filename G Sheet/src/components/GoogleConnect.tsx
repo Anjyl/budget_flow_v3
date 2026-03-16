@@ -58,10 +58,7 @@ export default function GoogleConnect(props: {
         <div className="flex-1">
           <div className="flex items-center justify-between gap-4">
             <div>
-              <p className="text-sm font-medium">Google connection</p>
-              <p className="text-xs text-muted-foreground">
-                OAuth is done in-browser via Google Identity Services.
-              </p>
+              <p className="text-sm font-medium">Sign in with Google</p>
             </div>
 
             {props.auth ? (
@@ -84,17 +81,13 @@ export default function GoogleConnect(props: {
 
           {!canConnect ? (
             <p className="mt-3 text-xs text-destructive">
-              Missing config: set <span className="font-mono">VITE_GOOGLE_CLIENT_ID</span>.
+              Google sign-in is not configured.
             </p>
-          ) : (
-            <p className="mt-3 text-xs text-muted-foreground">
-              OAuth Client ID: <span className="font-mono break-all">{clientId}</span>
-            </p>
-          )}
+          ) : null}
 
           {props.auth ? (
             <p className="mt-3 text-xs text-muted-foreground">
-              Scope: <span className="font-mono">{props.auth.scope}</span>
+              Connected to Google
             </p>
           ) : null}
         </div>
