@@ -13,6 +13,7 @@ import Transactions from "./pages/Transactions";
 import Categories from "./pages/Categories";
 import Analytics from "./pages/Analytics";
 import SheetsEditor from "./pages/SheetsEditor";
+import AIAssistant from "./pages/AIAssistant";
 import { useAuth } from "./_core/hooks/useAuth";
 import { useEffect, useState } from "react";
 
@@ -81,6 +82,11 @@ function Router() {
           <Route path={"/sheets"}>
             <ProtectedRoute>
               <SheetsEditor />
+            </ProtectedRoute>
+          </Route>
+          <Route path={"/ai-assistant"}>
+            <ProtectedRoute>
+              <AIAssistant />
             </ProtectedRoute>
           </Route>
         </>

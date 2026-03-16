@@ -1,6 +1,7 @@
 import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
+import { aiRouter } from "./_core/aiRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import {
@@ -25,6 +26,7 @@ import {
 
 export const appRouter = router({
   system: systemRouter,
+  ai: aiRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
