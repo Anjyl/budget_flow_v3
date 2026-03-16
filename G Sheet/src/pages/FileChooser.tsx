@@ -71,7 +71,7 @@ export default function FileChooser() {
     if (!auth) return;
     try {
       setIsLoading(true);
-      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY || "AIzaSyBHqueJWPOC2wyn9eJX5tpYuudf816wja8";
+      const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
       await initGapi(apiKey);
       setGapiToken(auth.accessToken);
       const driveFiles = await listSpreadsheetFiles({ query: "", pageSize: 50 });

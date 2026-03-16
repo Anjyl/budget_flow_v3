@@ -14,8 +14,7 @@ export default function GoogleConnect(props: {
   onAuthChange: (auth: AuthState | null) => void;
   auth: AuthState | null;
 }) {
-  const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined) ??
-    "1086160483736-3siaqhc081ac9j0onr3lqlabarehmvpl.apps.googleusercontent.com";
+  const clientId = (import.meta.env.VITE_GOOGLE_CLIENT_ID as string | undefined);
 
   const scope = useMemo(() => {
     // drive.readonly is needed for Picker/Drive discovery; spreadsheets for read/write.

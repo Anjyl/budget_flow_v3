@@ -19,8 +19,7 @@ export default function SheetPicker(props: {
   accessToken: string;
   onPick: (picked: PickedSheet) => void;
 }) {
-  const apiKey = (import.meta.env.VITE_GOOGLE_API_KEY as string | undefined) ??
-    "AIzaSyBHqueJWPOC2wyn9eJX5tpYuudf816wja8";
+  const apiKey = (import.meta.env.VITE_GOOGLE_API_KEY as string | undefined);
   const appId = import.meta.env.VITE_GOOGLE_APP_ID as string | undefined;
 
   const [manualId, setManualId] = useState("");
