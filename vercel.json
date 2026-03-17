@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "cd \"G Sheet/budget-web-app\" && pnpm build",
-  "outputDirectory": "G Sheet/budget-web-app/dist",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "cd \"G Sheet/budget-web-app\" && pnpm install"
+  "installCommand": "pnpm install"
 }
