@@ -1,13 +1,16 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
 import { formatCurrency, getCurrentMonth } from "@/lib/utils";
 import { PieChart, Pie, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from "recharts";
+import { Sparkles } from "lucide-react";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 
 const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#FFA07A", "#98D8C8", "#F7DC6F", "#BB8FCE", "#85C1E2"];
 
 export default function Analytics() {
+  const [showAI, setShowAI] = useState(false);
   const currentMonth = getCurrentMonth();
   const { data: transactions = [] } = trpc.transactions.list.useQuery();
   const { data: categories = [] } = trpc.categories.list.useQuery();
@@ -79,7 +82,31 @@ export default function Analytics() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 p-6">
+      <div className="space-y-6 p-6 relative">
+        {showAI && (
+          <AIAssistantWidget
+            title="Analytics Assistant"
+            systemPrompt="You are a financial analyst helping users understand their spending patterns and financial trends. Provide insights from their analytics data and suggest improvements."
+            suggestedPrompts={[
+              "Analyze my spending trends",
+              "Which category am I overspending on?",
+              "How can I improve my finances?",
+            ]}
+            height="400px"
+            isFloating={true}
+            onClose={() => setShowAI(false)}
+          />
+        )}
+        {!showAI && (
+          <button
+            onClick={() => setShowAI(true)}
+            className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+            title="Open AI Assistant"
+          >
+            <Sparkles className="w-6 h-6" />
+          </button>
+        )}
+
         <h1 className="text-3xl font-bold">Analytics & Reports</h1>
 
         {/* Expense Distribution Pie Chart */}
@@ -156,7 +183,7 @@ export default function Analytics() {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value: number) => `$${value.toFixed(2)}`} />
+                <Tooltip formatter={(value: number) => `R${value.toFixed(2)}`} />
                 <Legend />
                 <Bar dataKey="income" fill="#10B981" name="Income" />
                 <Bar dataKey="expenses" fill="#EF4444" name="Expenses" />
@@ -185,7 +212,7 @@ export default function Analytics() {
               <div className="text-2xl font-bold">
                 {spendingByCategory.length > 0
                   ? formatCurrency(totalExpenses / spendingByCategory.length)
-                  : "$0.00"}
+                  : "R0.00"}
               </div>
               <p className="text-xs text-muted-foreground mt-1">Average spending</p>
             </CardContent>

@@ -2,11 +2,14 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { TrendingDown, TrendingUp, Wallet, Target } from "lucide-react";
+import { TrendingDown, TrendingUp, Wallet, Target, Sparkles } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
+import { useState } from "react";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [showAI, setShowAI] = useState(false);
   const { data: transactions = [] } = trpc.transactions.list.useQuery();
   const { data: budgets = [] } = trpc.budgets.list.useQuery({
     month: new Date().toISOString().slice(0, 7),
@@ -28,7 +31,31 @@ export default function Dashboard() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8 p-6">
+      <div className="space-y-8 p-6 relative">
+        {showAI && (
+          <AIAssistantWidget
+            title="Dashboard Assistant"
+            systemPrompt="You are a financial assistant helping analyze the user's budget and transactions. Provide insights based on their spending patterns and help them make better financial decisions."
+            suggestedPrompts={[
+              "Analyze my spending this month",
+              "How can I reduce expenses?",
+              "What's my budget status?",
+            ]}
+            height="400px"
+            isFloating={true}
+            onClose={() => setShowAI(false)}
+          />
+        )}
+        {!showAI && (
+          <button
+            onClick={() => setShowAI(true)}
+            className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+            title="Open AI Assistant"
+          >
+            <Sparkles className="w-6 h-6" />
+          </button>
+        )}
+
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold">Welcome back, {user?.name || "User"}!</h1>

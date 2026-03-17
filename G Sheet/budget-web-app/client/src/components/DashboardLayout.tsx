@@ -1,9 +1,10 @@
 import { useAuth } from "@/_core/hooks/useAuth";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import { getLoginUrl } from "@/const";
 import { useIsMobile } from "@/hooks/useMobile";
+import { useNavigation } from "@/hooks/useNavigation";
 import {
   LayoutDashboard,
   LogOut,
@@ -30,12 +32,17 @@ import {
   BarChart3,
   Settings,
   Sparkles,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ArrowLeft,
+  Home,
+  HardDrive,
 } from "lucide-react";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useLocation } from "wouter";
 import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
+import { SaveConfirmationDialog } from "./SaveConfirmationDialog";
+import { toast } from "sonner";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -123,8 +130,12 @@ function DashboardLayoutContent({
   const { user, logout } = useAuth();
   const [location, setLocation] = useLocation();
   const { state, toggleSidebar } = useSidebar();
+  const { canGoBack, goBack, goToDashboard } = useNavigation();
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const activeMenuItem = menuItems.find(item => item.path === location);
   const isMobile = useIsMobile();
@@ -165,8 +176,89 @@ function DashboardLayoutContent({
     };
   }, [isResizing, setSidebarWidth]);
 
+  const handleNavigationWithCheck = (path: string) => {
+    if (hasUnsavedChanges) {
+      setPendingNavigation(path);
+      setShowSaveDialog(true);
+    } else {
+      setLocation(path);
+    }
+  };
+
+  const handleSaveAndNavigate = async () => {
+    try {
+      // Dispatch custom event for pages to save their data
+      window.dispatchEvent(new CustomEvent("save-changes"));
+      setHasUnsavedChanges(false);
+      setShowSaveDialog(false);
+      if (pendingNavigation) {
+        setLocation(pendingNavigation);
+        setPendingNavigation(null);
+      }
+      toast.success("Changes saved successfully");
+    } catch (error) {
+      toast.error("Failed to save changes");
+    }
+  };
+
+  const handleDiscardAndNavigate = () => {
+    setHasUnsavedChanges(false);
+    setShowSaveDialog(false);
+    if (pendingNavigation) {
+      setLocation(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleBackToDrive = () => {
+    if (hasUnsavedChanges) {
+      setPendingNavigation("drive");
+      setShowSaveDialog(true);
+    } else {
+      // Navigate to Google Drive selection
+      window.location.href = "/drive";
+    }
+  };
+
+  const handleBackClick = () => {
+    if (hasUnsavedChanges) {
+      setPendingNavigation("back");
+      setShowSaveDialog(true);
+    } else {
+      goBack();
+    }
+  };
+
+  const handleBackToDashboardClick = () => {
+    if (hasUnsavedChanges) {
+      setPendingNavigation("/");
+      setShowSaveDialog(true);
+    } else {
+      goToDashboard();
+    }
+  };
+
+  // Get user's profile image from Google (if available)
+  const userInitial = user?.name?.charAt(0).toUpperCase() || "U";
+  const userEmail = user?.email || "user@example.com";
+  const userName = user?.name || "User";
+
   return (
     <>
+      <SaveConfirmationDialog
+        isOpen={showSaveDialog}
+        onSave={handleSaveAndNavigate}
+        onDiscard={handleDiscardAndNavigate}
+        onCancel={() => {
+          setShowSaveDialog(false);
+          setPendingNavigation(null);
+        }}
+        title="Unsaved Changes"
+        description="You have unsaved changes in your spreadsheet. Would you like to save them before leaving?"
+        saveLabel="Save Changes"
+        discardLabel="Don't Save"
+      />
+
       <div className="relative" ref={sidebarRef}>
         <Sidebar
           collapsible="icon"
@@ -200,7 +292,7 @@ function DashboardLayoutContent({
                   <SidebarMenuItem key={item.path}>
                     <SidebarMenuButton
                       isActive={isActive}
-                      onClick={() => setLocation(item.path)}
+                      onClick={() => handleNavigationWithCheck(item.path)}
                       tooltip={item.label}
                       className={`h-10 transition-all font-normal`}
                     >
@@ -215,26 +307,76 @@ function DashboardLayoutContent({
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="p-3">
+          <SidebarFooter className="p-3 space-y-2">
+            {/* Back to Dashboard Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBackToDashboardClick}
+              className="w-full justify-start gap-2 text-xs"
+              title="Return to Dashboard"
+            >
+              <Home className="h-4 w-4" />
+              <span className="hidden group-data-[collapsible=icon]:hidden">Dashboard</span>
+            </Button>
+
+            {/* Back Button (if history available) */}
+            {canGoBack && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleBackClick}
+                className="w-full justify-start gap-2 text-xs"
+                title="Go to Previous Page"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span className="hidden group-data-[collapsible=icon]:hidden">Back</span>
+              </Button>
+            )}
+
+            {/* Back to Drive Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleBackToDrive}
+              className="w-full justify-start gap-2 text-xs"
+              title="Return to Google Drive"
+            >
+              <HardDrive className="h-4 w-4" />
+              <span className="hidden group-data-[collapsible=icon]:hidden">Drive</span>
+            </Button>
+
+            {/* User Profile Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex items-center gap-3 rounded-lg px-1 py-1 hover:bg-accent/50 transition-colors w-full text-left group-data-[collapsible=icon]:justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
                   <Avatar className="h-9 w-9 border shrink-0">
+                    <AvatarImage
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=random`}
+                      alt={userName}
+                    />
                     <AvatarFallback className="text-xs font-medium">
-                      {user?.name?.charAt(0).toUpperCase()}
+                      {userInitial}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
                     <p className="text-sm font-medium truncate leading-none">
-                      {user?.name || "-"}
+                      {userName}
                     </p>
                     <p className="text-xs text-muted-foreground truncate mt-1.5">
-                      {user?.email || "-"}
+                      {userEmail}
                     </p>
                   </div>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-56">
+                {/* User Info Section */}
+                <div className="px-2 py-1.5">
+                  <p className="text-xs font-semibold text-muted-foreground">SIGNED IN AS</p>
+                  <p className="text-sm font-medium truncate">{userName}</p>
+                  <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                </div>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={logout}
                   className="cursor-pointer text-destructive focus:text-destructive"
@@ -269,9 +411,48 @@ function DashboardLayoutContent({
                 </div>
               </div>
             </div>
+            <div className="flex gap-1">
+              {canGoBack && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleBackClick}
+                  className="h-9 w-9 p-0"
+                  title="Go back"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleBackToDashboardClick}
+                className="h-9 w-9 p-0"
+                title="Back to dashboard"
+              >
+                <Home className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         )}
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">
+          {/* Unsaved Changes Indicator */}
+          {hasUnsavedChanges && (
+            <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
+              <span className="text-sm font-medium text-yellow-800">
+                You have unsaved changes
+              </span>
+              <Button
+                size="sm"
+                onClick={handleSaveAndNavigate}
+                className="bg-yellow-600 hover:bg-yellow-700"
+              >
+                Save Now
+              </Button>
+            </div>
+          )}
+          {children}
+        </main>
       </SidebarInset>
     </>
   );

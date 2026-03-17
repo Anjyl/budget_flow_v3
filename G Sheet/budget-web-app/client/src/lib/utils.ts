@@ -7,20 +7,20 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Format amount in cents to currency string
- * @param cents Amount in cents (e.g., 5000 = $50.00)
- * @returns Formatted currency string (e.g., "$50.00")
+ * @param cents Amount in cents (e.g., 5000 = R50.00)
+ * @returns Formatted currency string (e.g., "R50.00")
  */
 export function formatCurrency(cents: number): string {
-  const dollars = cents / 100;
-  return new Intl.NumberFormat("en-US", {
+  const rands = cents / 100;
+  return new Intl.NumberFormat("en-ZA", {
     style: "currency",
-    currency: "USD",
-  }).format(dollars);
+    currency: "ZAR",
+  }).format(rands);
 }
 
 /**
  * Parse currency string to cents
- * @param value Currency string (e.g., "50.00" or "$50.00")
+ * @param value Currency string (e.g., "50.00" or "R50.00")
  * @returns Amount in cents (e.g., 5000)
  */
 export function parseCurrency(value: string): number {
