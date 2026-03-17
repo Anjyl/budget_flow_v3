@@ -4,12 +4,14 @@ interface SelectedSheet {
   id: string;
   name: string;
   modifiedTime: string;
+  dataRange?: string;
 }
 
 interface SheetContextType {
   selectedSheet: SelectedSheet | null;
   setSelectedSheet: (sheet: SelectedSheet | null) => void;
   isSheetSelected: boolean;
+  updateDataRange: (range: string) => void;
 }
 
 const SheetContext = createContext<SheetContextType | undefined>(undefined);
@@ -38,12 +40,19 @@ export function SheetProvider({ children }: { children: React.ReactNode }) {
     }
   }, [selectedSheet]);
 
+  const updateDataRange = (range: string) => {
+    if (selectedSheet) {
+      setSelectedSheet({ ...selectedSheet, dataRange: range });
+    }
+  };
+
   return (
     <SheetContext.Provider
       value={{
         selectedSheet,
         setSelectedSheet,
         isSheetSelected: !!selectedSheet,
+        updateDataRange,
       }}
     >
       {children}

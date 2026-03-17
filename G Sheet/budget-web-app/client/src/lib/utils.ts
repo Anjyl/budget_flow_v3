@@ -15,6 +15,7 @@ export function formatCurrency(cents: number): string {
   return new Intl.NumberFormat("en-ZA", {
     style: "currency",
     currency: "ZAR",
+    currencyDisplay: "narrowSymbol",
   }).format(rands);
 }
 
@@ -24,9 +25,10 @@ export function formatCurrency(cents: number): string {
  * @returns Amount in cents (e.g., 5000)
  */
 export function parseCurrency(value: string): number {
-  const cleaned = value.replace(/[^0-9.]/g, "");
-  const dollars = parseFloat(cleaned) || 0;
-  return Math.round(dollars * 100);
+  // Remove currency symbols (R, $, etc.) and commas
+  const cleaned = value.replace(/[R$\s,]/g, "");
+  const amount = parseFloat(cleaned) || 0;
+  return Math.round(amount * 100);
 }
 
 /**

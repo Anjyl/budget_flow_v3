@@ -1,17 +1,43 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertCircle, Home } from "lucide-react";
+import { AlertCircle, Home, Sparkles } from "lucide-react";
 import { useLocation } from "wouter";
+import { useState } from "react";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 
 export default function NotFound() {
   const [, setLocation] = useLocation();
+  const [showAI, setShowAI] = useState(false);
 
   const handleGoHome = () => {
     setLocation("/");
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 relative">
+      {showAI && (
+        <AIAssistantWidget
+          title="Help Assistant"
+          systemPrompt="The user is lost on a 404 page. Help them find their way back to the dashboard or other parts of the application."
+          suggestedPrompts={[
+            "Where am I?",
+            "Go to Dashboard",
+            "How do I get help?",
+          ]}
+          height="400px"
+          isFloating={true}
+          onClose={() => setShowAI(false)}
+        />
+      )}
+      {!showAI && (
+        <button
+          onClick={() => setShowAI(true)}
+          className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+          title="Open AI Assistant"
+        >
+          <Sparkles className="w-6 h-6" />
+        </button>
+      )}
       <Card className="w-full max-w-lg mx-4 shadow-lg border-0 bg-white/80 backdrop-blur-sm">
         <CardContent className="pt-8 pb-8 text-center">
           <div className="flex justify-center mb-6">

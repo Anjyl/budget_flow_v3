@@ -1,10 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { getLoginUrl } from "@/const";
-import { BarChart3, ArrowRight, LogOut } from "lucide-react";
+import { BarChart3, ArrowRight, LogOut, Sparkles } from "lucide-react";
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useState } from "react";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 
 export default function Landing() {
   const { isAuthenticated, logout } = useAuth();
+  const [showAI, setShowAI] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -16,7 +19,30 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden flex flex-col items-center justify-center relative">
+      {showAI && (
+        <AIAssistantWidget
+          title="Welcome Assistant"
+          systemPrompt="You are a friendly assistant welcoming the user to BudgetFlow. Explain that BudgetFlow helps them manage their finances by connecting to their Google Sheets."
+          suggestedPrompts={[
+            "What is BudgetFlow?",
+            "How do I get started?",
+            "Is my data secure?",
+          ]}
+          height="400px"
+          isFloating={true}
+          onClose={() => setShowAI(false)}
+        />
+      )}
+      {!showAI && (
+        <button
+          onClick={() => setShowAI(true)}
+          className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+          title="Open AI Assistant"
+        >
+          <Sparkles className="w-6 h-6" />
+        </button>
+      )}
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>

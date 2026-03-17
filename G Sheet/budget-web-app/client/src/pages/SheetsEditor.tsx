@@ -5,10 +5,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { trpc } from "@/lib/trpc";
-import { Save, Download, Upload, Plus, Trash2, RefreshCw, Sparkles, ChevronDown, Grid3x3, Smartphone } from "lucide-react";
+import { Save, Download, Upload, Plus, Trash2, RefreshCw, Sparkles, ChevronDown, Grid3x3, Smartphone, FileSpreadsheet } from "lucide-react";
 import { toast } from "sonner";
 import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 import { MobileSheetViewer } from "@/components/MobileSheetViewer";
+import { useSheet } from "@/contexts/SheetContext";
 import {
   Select,
   SelectContent,
@@ -24,26 +25,22 @@ interface Sheet {
   modified: boolean;
 }
 
-interface SheetSelection {
-  sheetId: string;
-  dataRange: string; // e.g., "A1:Z100"
-}
-
 export default function SheetsEditor() {
+  const { selectedSheet, updateDataRange } = useSheet();
   const [sheets, setSheets] = useState<Sheet[]>([]);
   const [activeSheet, setActiveSheet] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedFile, setSelectedFile] = useState<{ id: string; name: string } | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
   const [showAI, setShowAI] = useState(false);
-  const [sheetSelection, setSheetSelection] = useState<SheetSelection | null>(null);
-  const [dataRangeInput, setDataRangeInput] = useState("A1:Z100");
+  const [dataRangeInput, setDataRangeInput] = useState(selectedSheet?.dataRange || "A1:Z100");
   const [viewMode, setViewMode] = useState<"mobile" | "table">("mobile");
 
   // Load sheets from selected file
   useEffect(() => {
-    loadSheets();
-  }, []);
+    if (selectedSheet) {
+      loadSheets();
+    }
+  }, [selectedSheet?.id]);
 
   const loadSheets = async () => {
     try {
@@ -59,26 +56,15 @@ export default function SheetsEditor() {
   };
 
   const handleSheetSelection = (sheetId: string) => {
-    if (!sheetId) {
-      setSheetSelection(null);
-      return;
-    }
+    if (!sheetId) return;
 
-    setSheetSelection({
-      sheetId,
-      dataRange: dataRangeInput,
-    });
-
-    // Store selection in context/localStorage for persistent use
-    localStorage.setItem(
-      "selectedSheetConfig",
-      JSON.stringify({
-        sheetId,
-        dataRange: dataRangeInput,
-      })
-    );
-
-    toast.success(`Sheet "${sheetId}" selected. Data range: ${dataRangeInput}`);
+    // Update the context which persists to localStorage
+    updateDataRange(dataRangeInput);
+    
+    toast.success(`Sheet configuration updated. Data range: ${dataRangeInput}`);
+    
+    // Simulate loading data for the selected sheet
+    loadSheets();
   };
 
   const handleCellChange = (row: number, col: number, value: string) => {

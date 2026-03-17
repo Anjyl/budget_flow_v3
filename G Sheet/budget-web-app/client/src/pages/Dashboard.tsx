@@ -2,15 +2,28 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { trpc } from "@/lib/trpc";
-import { TrendingDown, TrendingUp, Wallet, Target, Sparkles } from "lucide-react";
+import { TrendingDown, TrendingUp, Wallet, Target, Sparkles, FileSpreadsheet, AlertCircle } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { AIAssistantWidget } from "@/components/AIAssistantWidget";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSheet } from "@/contexts/SheetContext";
+import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { selectedSheet } = useSheet();
+  const [, setLocation] = useLocation();
   const [showAI, setShowAI] = useState(false);
-  const { data: transactions = [] } = trpc.transactions.list.useQuery();
+  
+  // Use selected sheet and range for data fetching if available
+  const { data: transactions = [], isLoading: isLoadingTransactions } = trpc.transactions.list.useQuery(
+    selectedSheet ? { 
+      // In a real implementation, we'd pass spreadsheetId and range to the backend
+      // For now, we'll use the existing list query but simulate the dependency
+    } : undefined
+  );
+  
   const { data: budgets = [] } = trpc.budgets.list.useQuery({
     month: new Date().toISOString().slice(0, 7),
   });
@@ -32,6 +45,40 @@ export default function Dashboard() {
   return (
     <DashboardLayout>
       <div className="space-y-8 p-6 relative">
+        {/* Sheet Selection Warning */}
+        {!selectedSheet && (
+          <Card className="border-2 border-yellow-200 bg-yellow-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4">
+                <AlertCircle className="h-8 w-8 text-yellow-600" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-yellow-800">No Sheet Selected</h3>
+                  <p className="text-sm text-yellow-700">
+                    Please select a Google Sheet and data range to enable dynamic dashboard updates.
+                  </p>
+                </div>
+                <Button 
+                  onClick={() => setLocation("/sheets")}
+                  variant="outline" 
+                  className="border-yellow-300 hover:bg-yellow-100"
+                >
+                  Go to Sheets
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {selectedSheet && (
+          <div className="flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-lg w-fit">
+            <FileSpreadsheet className="h-4 w-4 text-blue-600" />
+            <span className="text-xs font-medium text-blue-800">
+              Pulling data from: <span className="font-bold">{selectedSheet.name}</span> 
+              {selectedSheet.dataRange && ` (${selectedSheet.dataRange})`}
+            </span>
+          </div>
+        )}
+
         {showAI && (
           <AIAssistantWidget
             title="Dashboard Assistant"

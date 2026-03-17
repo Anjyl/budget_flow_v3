@@ -105,7 +105,7 @@ export default function Transactions() {
 
   const handleEdit = (transaction: any) => {
     setFormData({
-      amount: formatCurrency(transaction.amount).replace("R", ""),
+      amount: (transaction.amount / 100).toFixed(2),
       description: transaction.description || "",
       date: new Date(transaction.date).toISOString().split("T")[0],
       categoryId: transaction.categoryId.toString(),

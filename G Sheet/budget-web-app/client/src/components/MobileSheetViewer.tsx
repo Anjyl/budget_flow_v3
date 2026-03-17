@@ -63,6 +63,14 @@ export function MobileSheetViewer({
   const sheetHeaders = headers || (data.length > 0 ? data[0] : []);
   const sheetData = headers ? data : data.slice(1);
 
+  // Simple assessment logic for mobile view
+  const assessData = (row: string[]) => {
+    // Look for common financial keywords to highlight data
+    const hasAmount = row.some(cell => cell.includes("R") || cell.includes("$") || /^\d+(\.\d{2})?$/.test(cell));
+    const hasDate = row.some(cell => /\d{4}-\d{2}-\d{2}/.test(cell) || /\d{2}\/\d{2}\/\d{4}/.test(cell));
+    return { hasAmount, hasDate };
+  };
+
   const totalPages = Math.ceil(sheetData.length / rowsPerPage);
   const startIdx = currentPage * rowsPerPage;
   const endIdx = startIdx + rowsPerPage;
@@ -146,16 +154,21 @@ export function MobileSheetViewer({
                         <span className="text-xs font-semibold text-muted-foreground bg-muted px-2 py-1 rounded">
                           #{absoluteRowIdx + 1}
                         </span>
-                        {/* Show first few columns as preview */}
+                        {/* Show first few columns as preview with assessment */}
                         <div className="truncate">
                           <p className="font-semibold text-sm truncate">
                             {row[0] || "—"}
                           </p>
-                          {row[1] && (
-                            <p className="text-xs text-muted-foreground truncate">
-                              {row[1]}
-                            </p>
-                          )}
+                          <div className="flex gap-2 items-center">
+                            {row[1] && (
+                              <p className="text-xs text-muted-foreground truncate">
+                                {row[1]}
+                              </p>
+                            )}
+                            {assessData(row).hasAmount && (
+                              <span className="text-[10px] bg-green-100 text-green-700 px-1 rounded font-medium">Financial</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>

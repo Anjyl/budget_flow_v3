@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
-import { FileText, Search, CheckCircle2, Clock, User, ExternalLink, LogOut } from "lucide-react";
+import { FileText, Search, CheckCircle2, Clock, User, ExternalLink, LogOut, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 
 interface GoogleFile {
   id: string;
@@ -34,6 +35,7 @@ export default function FileChooser() {
   const [filteredFiles, setFilteredFiles] = useState<GoogleFile[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showAI, setShowAI] = useState(false);
 
   // Redirect to landing if not authenticated
   useEffect(() => {
@@ -116,7 +118,30 @@ export default function FileChooser() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-12 px-4 relative">
+      {showAI && (
+        <AIAssistantWidget
+          title="File Assistant"
+          systemPrompt="You are a helpful assistant helping the user select the correct Google Sheet for their budget. Explain that they should choose a sheet that contains their financial data."
+          suggestedPrompts={[
+            "Which file should I choose?",
+            "How do I connect my sheet?",
+            "What happens after I select a file?",
+          ]}
+          height="400px"
+          isFloating={true}
+          onClose={() => setShowAI(false)}
+        />
+      )}
+      {!showAI && (
+        <button
+          onClick={() => setShowAI(true)}
+          className="fixed bottom-4 right-4 z-40 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+          title="Open AI Assistant"
+        >
+          <Sparkles className="w-6 h-6" />
+        </button>
+      )}
       <div className="max-w-6xl mx-auto">
         {/* Header with Sign Out */}
         <div className="mb-12">
