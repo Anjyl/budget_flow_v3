@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { useLocation } from "wouter";
+import { useSheet } from "@/contexts/SheetContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ interface GoogleFile {
 export default function FileChooser() {
   const { isAuthenticated, loading, logout } = useAuth();
   const [, navigate] = useLocation();
+  const { setSelectedSheet, selectedSheet } = useSheet();
 
   const handleLogout = async () => {
     try {
@@ -31,7 +33,6 @@ export default function FileChooser() {
   const [files, setFiles] = useState<GoogleFile[]>([]);
   const [filteredFiles, setFilteredFiles] = useState<GoogleFile[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedFile, setSelectedFile] = useState<GoogleFile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Redirect to landing if not authenticated
@@ -79,8 +80,12 @@ export default function FileChooser() {
 
   const handleSelectFile = async (file: GoogleFile) => {
     try {
-      setSelectedFile(file);
-      // TODO: Call tRPC procedure to save selected file to user account
+      setSelectedSheet({
+        id: file.id,
+        name: file.name,
+        modifiedTime: file.modifiedTime,
+      });
+      
       toast.success(`Selected: ${file.name}`);
       
       // Navigate to dashboard after a brief delay
@@ -89,7 +94,6 @@ export default function FileChooser() {
       }, 1000);
     } catch (error) {
       toast.error("Failed to select file");
-      setSelectedFile(null);
     }
   };
 
@@ -185,7 +189,7 @@ export default function FileChooser() {
               <Card
                 key={file.id}
                 className={`cursor-pointer transition-all hover:shadow-2xl hover:shadow-emerald-500/20 bg-slate-800/50 backdrop-blur-xl border-slate-700/50 ${
-                  selectedFile?.id === file.id
+                  selectedSheet?.id === file.id
                     ? "ring-2 ring-emerald-500 shadow-2xl shadow-emerald-500/30 bg-slate-800/80"
                     : "hover:border-emerald-500/30"
                 }`}
@@ -194,7 +198,7 @@ export default function FileChooser() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between gap-2">
                     <FileText className="h-8 w-8 text-emerald-400 flex-shrink-0 mt-1" />
-                    {selectedFile?.id === file.id && (
+                    {selectedSheet?.id === file.id && (
                       <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0" />
                     )}
                   </div>
@@ -228,13 +232,13 @@ export default function FileChooser() {
                         handleSelectFile(file);
                       }}
                       className={`flex-1 font-semibold transition-all ${
-                        selectedFile?.id === file.id
+                        selectedSheet?.id === file.id
                           ? "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white border-0"
                           : "bg-gradient-to-r from-emerald-600 to-blue-600 hover:from-emerald-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-xl"
                       }`}
-                      disabled={selectedFile?.id === file.id}
+                      disabled={selectedSheet?.id === file.id}
                     >
-                      {selectedFile?.id === file.id ? "✓ Selected" : "Select"}
+                      {selectedSheet?.id === file.id ? "✓ Selected" : "Select"}
                     </Button>
                     {file.webViewLink && (
                       <Button
