@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AIChatBox, { type Message } from "@/components/AIChatBox";
+import { AIChatBox, type Message } from "@/components/AIChatBox";
 import { trpc } from "@/lib/trpc";
 import { Sparkles, X } from "lucide-react";
 

@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { publicProcedure, router } from "../trpc";
-import { invokeLLM, type Message } from "../llm";
+import { publicProcedure, router } from "./trpc";
+import { invokeLLM, type Message } from "./llm";
 
 export const aiRouter = router({
   chat: publicProcedure

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/DashboardLayout";
-import AIChatBox, { type Message } from "@/components/AIChatBox";
+import { AIChatBox, type Message } from "@/components/AIChatBox";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Sparkles, MessageSquare, TrendingUp, HelpCircle } from "lucide-react";
+import { Sparkles, MessageSquare, TrendingUp, HelpCircle, Target } from "lucide-react";
 
 export default function AIAssistant() {
   const [messages, setMessages] = useState<Message[]>([

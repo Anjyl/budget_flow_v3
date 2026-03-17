@@ -1,0 +1,33 @@
+
+> budget-web-app@1.0.0 build /home/ubuntu/budget_flow_v3/G Sheet/budget-web-app
+> vite build && esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist
+
+vite v7.1.9 building for production...
+(!) %VITE_ANALYTICS_ENDPOINT% is not defined in env variables found in /index.html. Is the variable mistyped?
+(!) %VITE_ANALYTICS_WEBSITE_ID% is not defined in env variables found in /index.html. Is the variable mistyped?
+<script src="%VITE_ANALYTICS_ENDPOINT%/umami"> in "/index.html" can't be bundled without type="module" attribute
+transforming...
+✓ 6276 modules transformed.
+✗ Build failed in 17.25s
+error during build:
+client/src/components/AIAssistantWidget.tsx (4:7): "default" is not exported by "client/src/components/AIChatBox.tsx", imported by "client/src/components/AIAssistantWidget.tsx".
+file: /home/ubuntu/budget_flow_v3/G Sheet/budget-web-app/client/src/components/AIAssistantWidget.tsx:4:7
+
+2: import { Button } from "@/components/ui/button";
+3: import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+4: import AIChatBox, { type Message } from "@/components/AIChatBox";
+          ^
+5: import { trpc } from "@/lib/trpc";
+6: import { Sparkles, X } from "lucide-react";
+
+    at getRollupError (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/parseAst.js:401:41)
+    at error (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/parseAst.js:397:42)
+    at Module.error (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:16939:16)
+    at Module.traceVariable (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:17391:29)
+    at ModuleScope.findVariable (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:15061:39)
+    at FunctionScope.findVariable (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:5642:38)
+    at FunctionBodyScope.findVariable (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:5642:38)
+    at Identifier.bind (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:5413:40)
+    at CallExpression.bind (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:2800:28)
+    at CallExpression.bind (file:///home/ubuntu/budget_flow_v3/G%20Sheet/budget-web-app/node_modules/.pnpm/rollup@4.52.4/node_modules/rollup/dist/es/shared/node-entry.js:12108:15)
+ ELIFECYCLE  Command failed with exit code 1.
