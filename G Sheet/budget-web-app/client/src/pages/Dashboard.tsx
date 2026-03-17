@@ -14,8 +14,6 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { selectedSheet } = useSheet();
   const [, setLocation] = useLocation();
-  const [showAI, setShowAI] = useState(false);
-  
   // Use selected sheet and range for data fetching if available
   const { data: transactions = [], isLoading: isLoadingTransactions } = trpc.transactions.list.useQuery(
     selectedSheet ? { 
@@ -79,29 +77,7 @@ export default function Dashboard() {
           </div>
         )}
 
-        {showAI && (
-          <AIAssistantWidget
-            title="Dashboard Assistant"
-            systemPrompt="You are a financial assistant helping analyze the user's budget and transactions. Provide insights based on their spending patterns and help them make better financial decisions."
-            suggestedPrompts={[
-              "Analyze my spending this month",
-              "How can I reduce expenses?",
-              "What's my budget status?",
-            ]}
-            height="400px"
-            isFloating={true}
-            onClose={() => setShowAI(false)}
-          />
-        )}
-        {!showAI && (
-          <button
-            onClick={() => setShowAI(true)}
-            className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
-            title="Open AI Assistant"
-          >
-            <Sparkles className="w-6 h-6" />
-          </button>
-        )}
+
 
         {/* Header */}
         <div>

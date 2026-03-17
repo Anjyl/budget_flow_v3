@@ -43,6 +43,7 @@ import { DashboardLayoutSkeleton } from './DashboardLayoutSkeleton';
 import { Button } from "./ui/button";
 import { SaveConfirmationDialog } from "./SaveConfirmationDialog";
 import { toast } from "sonner";
+import { AIAssistantWidget } from "./AIAssistantWidget";
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/" },
@@ -134,6 +135,7 @@ function DashboardLayoutContent({
   const isCollapsed = state === "collapsed";
   const [isResizing, setIsResizing] = useState(false);
   const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showAI, setShowAI] = useState(true);
   const [pendingNavigation, setPendingNavigation] = useState<string | null>(null);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -435,7 +437,7 @@ function DashboardLayoutContent({
             </div>
           </div>
         )}
-        <main className="flex-1 p-4">
+        <main className="flex-1 p-4 relative">
           {/* Unsaved Changes Indicator */}
           {hasUnsavedChanges && (
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-center justify-between">
@@ -452,6 +454,30 @@ function DashboardLayoutContent({
             </div>
           )}
           {children}
+
+          {showAI && (
+            <AIAssistantWidget
+              title="Global Assistant"
+              systemPrompt="You are a helpful financial assistant available on every page. Help the user navigate the app and answer their financial questions."
+              suggestedPrompts={[
+                "How do I use this page?",
+                "Analyze my budget",
+                "Financial tips",
+              ]}
+              height="400px"
+              isFloating={true}
+              onClose={() => setShowAI(false)}
+            />
+          )}
+          {!showAI && (
+            <button
+              onClick={() => setShowAI(true)}
+              className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
+              title="Open AI Assistant"
+            >
+              <Sparkles className="w-6 h-6" />
+            </button>
+          )}
         </main>
       </SidebarInset>
     </>

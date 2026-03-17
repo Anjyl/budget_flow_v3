@@ -20,7 +20,6 @@ import { AIAssistantWidget } from "@/components/AIAssistantWidget";
 export default function Transactions() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [showAI, setShowAI] = useState(false);
   const [formData, setFormData] = useState({
     amount: "",
     description: "",
@@ -124,29 +123,7 @@ export default function Transactions() {
   return (
     <DashboardLayout>
       <div className="space-y-6 p-6 relative">
-        {showAI && (
-          <AIAssistantWidget
-            title="Transaction Assistant"
-            systemPrompt="You are a financial assistant helping users manage their transactions. Help them categorize expenses, find spending patterns, and provide advice on transaction management."
-            suggestedPrompts={[
-              "Help me categorize this expense",
-              "Analyze my recent transactions",
-              "What are my spending patterns?",
-            ]}
-            height="400px"
-            isFloating={true}
-            onClose={() => setShowAI(false)}
-          />
-        )}
-        {!showAI && (
-          <button
-            onClick={() => setShowAI(true)}
-            className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
-            title="Open AI Assistant"
-          >
-            <Sparkles className="w-6 h-6" />
-          </button>
-        )}
+
 
         <div className="flex justify-between items-center">
           <h1 className="text-3xl font-bold">Transactions</h1>

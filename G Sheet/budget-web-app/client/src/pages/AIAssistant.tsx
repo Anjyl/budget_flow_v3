@@ -156,18 +156,20 @@ export default function AIAssistant() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5" />
-              Chat with AI Assistant
+              AI Assistant
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <AIChatBox
-              messages={messages}
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading}
-              placeholder="Ask me anything about your finances..."
-              suggestedPrompts={suggestedPrompts}
-              height="500px"
-            />
+          <CardContent className="text-center py-12">
+            <div className="max-w-md mx-auto space-y-4">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                <Sparkles className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Chat with your Assistant</h3>
+              <p className="text-muted-foreground">
+                Your AI financial assistant is always available in the bottom right corner of every page. 
+                Click the icon to start a conversation!
+              </p>
+            </div>
           </CardContent>
         </Card>
       </div>

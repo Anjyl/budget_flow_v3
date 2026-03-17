@@ -31,7 +31,6 @@ export default function SheetsEditor() {
   const [activeSheet, setActiveSheet] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [editingCell, setEditingCell] = useState<{ row: number; col: number } | null>(null);
-  const [showAI, setShowAI] = useState(false);
   const [dataRangeInput, setDataRangeInput] = useState(selectedSheet?.dataRange || "A1:Z100");
   const [viewMode, setViewMode] = useState<"mobile" | "table">("mobile");
 
@@ -141,29 +140,7 @@ export default function SheetsEditor() {
     return (
       <DashboardLayout>
         <div className="space-y-6 p-6 relative">
-          {showAI && (
-            <AIAssistantWidget
-              title="Sheets Assistant"
-              systemPrompt="You are a spreadsheet assistant helping users manage their Google Sheets data. Help them understand data ranges, sheet structure, and best practices for data organization."
-              suggestedPrompts={[
-                "How should I organize my data?",
-                "What data range should I select?",
-                "Help me understand sheet structure",
-              ]}
-              height="400px"
-              isFloating={true}
-              onClose={() => setShowAI(false)}
-            />
-          )}
-          {!showAI && (
-            <button
-              onClick={() => setShowAI(true)}
-              className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
-              title="Open AI Assistant"
-            >
-              <Sparkles className="w-6 h-6" />
-            </button>
-          )}
+
 
           <h1 className="text-3xl font-bold">Spreadsheet Editor</h1>
 
@@ -243,29 +220,7 @@ export default function SheetsEditor() {
   return (
     <DashboardLayout>
       <div className="space-y-6 p-6 relative">
-        {showAI && (
-          <AIAssistantWidget
-            title="Sheets Assistant"
-            systemPrompt="You are a spreadsheet assistant helping users manage their Google Sheets data. Help them understand data ranges, sheet structure, and best practices for data organization."
-            suggestedPrompts={[
-              "How should I organize my data?",
-              "What data range should I select?",
-              "Help me understand sheet structure",
-            ]}
-            height="400px"
-            isFloating={true}
-            onClose={() => setShowAI(false)}
-          />
-        )}
-        {!showAI && (
-          <button
-            onClick={() => setShowAI(true)}
-            className="fixed bottom-4 right-4 z-40 bg-blue-500 hover:bg-blue-600 text-white rounded-full p-4 shadow-lg transition-all hover:shadow-xl"
-            title="Open AI Assistant"
-          >
-            <Sparkles className="w-6 h-6" />
-          </button>
-        )}
+
 
         <div className="flex justify-between items-center flex-wrap gap-4">
           <h1 className="text-3xl font-bold">Spreadsheet Editor</h1>

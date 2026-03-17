@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AIChatBox, type Message } from "@/components/AIChatBox";
 import { trpc } from "@/lib/trpc";
-import { Sparkles, X } from "lucide-react";
+import { Sparkles, X, Minus, Maximize2 } from "lucide-react";
 
 interface AIAssistantWidgetProps {
   /**
@@ -66,6 +66,7 @@ export function AIAssistantWidget({
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
 
   const chatMutation = trpc.ai.chat.useMutation();
 
@@ -105,39 +106,59 @@ export function AIAssistantWidget({
   };
 
   const content = (
-    <Card className={className}>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+    <Card className={`${className} ${isMinimized ? "w-auto" : ""}`}>
+      <CardHeader className={`flex flex-row items-center justify-between space-y-0 ${isMinimized ? "p-3" : "pb-4"}`}>
         <CardTitle className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5" />
-          {title}
+          <Sparkles className="h-5 w-5 text-blue-500" />
+          {!isMinimized && title}
         </CardTitle>
-        {isFloating && onClose && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="h-8 w-8"
-          >
-            <X className="h-4 w-4" />
-          </Button>
-        )}
+        <div className="flex items-center gap-1">
+          {isFloating && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setIsMinimized(!isMinimized)}
+              className="h-8 w-8"
+              title={isMinimized ? "Maximize" : "Minimize"}
+            >
+              {isMinimized ? (
+                <Maximize2 className="h-4 w-4" />
+              ) : (
+                <Minus className="h-4 w-4" />
+              )}
+            </Button>
+          )}
+          {isFloating && onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onClose}
+              className="h-8 w-8"
+              title="Close"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </CardHeader>
-      <CardContent>
-        <AIChatBox
-          messages={messages}
-          onSendMessage={handleSendMessage}
-          isLoading={isLoading}
-          placeholder="Ask me anything..."
-          suggestedPrompts={suggestedPrompts}
-          height={height}
-        />
-      </CardContent>
+      {!isMinimized && (
+        <CardContent>
+          <AIChatBox
+            messages={messages}
+            onSendMessage={handleSendMessage}
+            isLoading={isLoading}
+            placeholder="Ask me anything..."
+            suggestedPrompts={suggestedPrompts}
+            height={height}
+          />
+        </CardContent>
+      )}
     </Card>
   );
 
   if (isFloating) {
     return (
-      <div className="fixed bottom-4 right-4 w-96 max-w-[calc(100vw-2rem)] z-50 shadow-2xl rounded-lg">
+      <div className={`fixed bottom-4 right-4 ${isMinimized ? "w-auto" : "w-96"} max-w-[calc(100vw-2rem)] z-50 shadow-2xl rounded-lg transition-all duration-300`}>
         {content}
       </div>
     );
