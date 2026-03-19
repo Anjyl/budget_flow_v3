@@ -5,7 +5,7 @@
   "framework": "vite",
   "installCommand": "pnpm install",
   "functions": {
-    "server/_core/index.ts": {
+    "api/index.ts": {
       "memory": 1024,
       "maxDuration": 30
     }
@@ -36,7 +36,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/$1"
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
