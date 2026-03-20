@@ -1,7 +1,12 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { createExpressApp } from "../server/_core/index";
 
+let cachedApp: any = null;
+
 export default async (req: VercelRequest, res: VercelResponse) => {
-  const app = await createExpressApp();
-  return app(req, res);
+  // Cache the Express app to avoid recreating it on every request
+  if (!cachedApp) {
+    cachedApp = await createExpressApp();
+  }
+  return cachedApp(req, res);
 };
