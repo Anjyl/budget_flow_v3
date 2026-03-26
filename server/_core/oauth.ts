@@ -1,9 +1,12 @@
 import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
-import type { Express, Request, Response } from "express";
+import type { Request, Response, Application } from "express";
+import express from "express";
 import * as db from "../db";
 import { getSessionCookieOptions } from "./cookies";
 import { sdk } from "./sdk";
 import * as googleOAuth from "./googleOAuth";
+
+const app: Application = express();
 
 function getQueryParam(req: Request, key: string): string | undefined {
   const value = req.query[key];
