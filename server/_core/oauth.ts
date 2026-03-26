@@ -13,7 +13,7 @@ function getQueryParam(req: Request, key: string): string | undefined {
   return typeof value === "string" ? value : undefined;
 }
 
-export function registerOAuthRoutes(app: Express) {
+export function registerOAuthRoutes(app: Application ) {
   // Google OAuth callback handler
   app.get("/api/oauth/google/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
